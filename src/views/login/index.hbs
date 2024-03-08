@@ -1,0 +1,37 @@
+<div class="flex justify-center items-center h-screen bg-gray-100">
+  <div class="bg-white shadow-md rounded-lg px-24 py-8 w-112">
+    <div class="mb-6 text-center">
+      <img src="/images/odd.png" class="w-72 h-auto mx-auto" alt="Logo">
+    </div>
+    <form action="" method="POST">
+      <div class="mb-6 grid grid-cols-1 gap-4">
+        <div class="flex items-center">
+          <i class="far fa-envelope mr-2"></i>
+          <input class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="correo" id="correo" type="text" placeholder="Correo">
+        </div>
+        {{#if error}}
+        <p class="text-red-500 text-xs italic">{{error}}</p>
+        {{/if}}
+        <div class="flex items-center">
+          <i class="fas fa-key mr-2"></i>
+          <input class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="password" id="password" type="password" placeholder="**********">
+        </div>
+        <p class="text-gray-800 text-xs italic">Ingrese contraseña.</p>
+      </div>
+      <div class="flex items-center justify-between">
+        <button class="bg-black hover:bg-gray-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline" type="submit">Ingresar</button>
+
+               <div class="group relative">
+  <a id="olvidar-contrasena" class="inline-block align-baseline font-bold text-xs text-blue-500 hover:text-blue-800 px-7 cursor-pointer">
+    ¿Olvidaste tu contraseña?
+  </a>
+  <div class="opacity-0 bg-gray-700 text-xs text-white group-hover:opacity-100 absolute top-0 left-0 mt-8 p-2 rounded-lg transition duration-300">
+    Contacte a su Adminnistrador
+  </div>
+</div>
+    
+      </div>
+    </form>
+    <p class="text-center text-gray-500 text-xs mt-4">&copy;-ODD- DevOps Division</p>
+  </div>
+</div>
