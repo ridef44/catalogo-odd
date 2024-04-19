@@ -1,7 +1,23 @@
-const renderAngularApp = (req, res) => {
-  res.render('catalogo/index');
-};
+const path = require('path');
 
-module.exports = {
-  renderAngularApp
-};
+//renderizado de archivos estativos
+
+function renderHtml (req, res){
+
+  if(!req.session.loggedIn){
+    return res.redirect('/');
+  }
+
+  else{
+    res.sendFile(path.join(__dirname, '../public', 'index.html'));
+  }
+  
+}
+
+
+
+
+module.exports ={
+  renderHtml
+ 
+}

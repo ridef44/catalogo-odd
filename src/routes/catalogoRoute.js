@@ -1,7 +1,10 @@
-const catalogoController = require('../controllers/catalogoController');
 const express = require('express');
+const catalogoController = require('../controllers/catalogoController');
+
 const router = express.Router();
-const path = require('path');
+
+
+router.get('/catalogo', catalogoController.renderHtml)
 
 
 

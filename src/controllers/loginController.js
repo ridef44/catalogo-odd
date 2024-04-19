@@ -28,7 +28,7 @@ const bcrypt = require('bcrypt');
             else{
               req.session.loggedIn = true;
 	            req.session.nombre = element.nombre;
-              console.log("Hola " + (data.correo) );
+              
               res.redirect('/');
               
             }
@@ -73,9 +73,7 @@ const bcrypt = require('bcrypt');
                       req.getConnection((err, conn) => {
                         conn.query('INSERT INTO user SET ?',[data], (err, rows) =>{
                           res.redirect('/');
-                          console.log(data);
-                          console.log(userdata.length)
-                
+                        
                           if (err) {
                             console.log(err);
                           }
