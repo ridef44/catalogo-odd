@@ -54,6 +54,7 @@ app.listen(app.get('port'), () => {
 });
 
 app.use('/images', express.static(path.join(__dirname, '/views/img')));
+
 app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 
 

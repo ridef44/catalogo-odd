@@ -6,10 +6,9 @@
 
     <title>Catalogo  - ODD - </title>
 
-    <!-- Tailwind CSS Link -->
-    <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.0.1/tailwind.min.css">
-
+       <!-- Tailwind CSS Link -->
+       <link rel="stylesheet"href="images/output.css">
+ 
     <!-- Fontawesome Link -->
     <link href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" rel="stylesheet">
 
@@ -17,11 +16,11 @@
   <body class="bg-gray-200">
 
 
-<nav class="bg-black border-gray-200 text-white">
+<nav class="bg-midnight border-gray-200 text-white">
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-    <a href="" class="flex items-center space-x-3 rtl:space-x-reverse">
+    <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
         <img src="/images/odd-w-sm.png"  class="h-8" />
-        <span class=" self-center text-2xl font-semibold whitespace-nowrap hover:text-yellow-500 ">-   Catálogo</span>
+        <span class=" self-center text-2xl font-semibold whitespace-nowrap hover:text-aws ">-   Catálogo</span>
     </a>
 
     <div class=" w-full md:block md:w-auto" id="navbar-default">
@@ -29,7 +28,7 @@
      
         {{#if name}}
         <li  class="relative ">
-          <a onclick="dropdown()" href="#" class=" bg-black flex items-center hover:text-yellow-500">
+          <a onclick="dropdown()" href="#" class=" bg-midnight flex items-center hover:text-aws">
 
             <p>{{name}} &nbsp;</p>
             <span class="rotate-180" id="arrow">
@@ -41,10 +40,10 @@
 
           <div class="hidden" id="submenu">
      
-                <ul class=" bg-black absolute right-0 md:block w-40 py-2 border border-gray-100 rounded-lg shadow-md z-10">
+                <ul class=" bg-midnight absolute right-0 md:block w-40 py-2 border border-gray-100 rounded-lg shadow-md z-10">
 
             <!-- Aquí se pueden agregar más elementos del dropdown si es necesario -->
-            <li ><a href="/logout" class="flex items-center text-yellow-500 block px-4 py-2  hover:bg-gray-100 hover:text-gray-700">Cerrar sesión
+            <li ><a href="/logout" class="flex items-center text-aws block px-4 py-2  hover:bg-gray-100 hover:text-gray-700">Cerrar sesión
 
                 <i data-feather="log-out" class="pl-2"></i>
             </a></li>
@@ -63,7 +62,7 @@
 
             {{else}}
 
-        <li class="relative bg-gray-700">
+        <li class="relative bg-midnight">
           <a href="/register" class="nav-link font-semibold border-2 border-white hover:bg-white hover:text-black py-3
             px-4 rounded-md">Registro</a>
         </li>
