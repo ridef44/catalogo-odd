@@ -7,7 +7,8 @@ module.exports = {
     extend: {
       colors:{
         'midnight': '#292524',
-        'aws': '#d97706'
+        'aws': '#d97706',
+        'teal': '#14b8a6'
       },
      
 
@@ -15,3 +16,7 @@ module.exports = {
   },
   plugins: [],
 }
+
+
+//"tailwind:css": "postcss public/styles/tailwind.css -o public/styles/style.css"
+// refrescar estilos tailwind

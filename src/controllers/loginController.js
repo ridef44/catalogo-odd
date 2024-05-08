@@ -28,9 +28,8 @@ const bcrypt = require('bcrypt');
             else{
               req.session.loggedIn = true;
 	            req.session.nombre = element.nombre;
-              
+              req.session.rol = element.id_role;
               res.redirect('/');
-              
             }
           });
           
@@ -43,50 +42,7 @@ const bcrypt = require('bcrypt');
 }
 //----------------------------
 
-  function register(req, res) {
-    if (req.session.loggedIn) {
-      res.redirect('/');
-      // user is logged in.
-  }
-  else {
-    res.render('login/register');
-    
-    
-      // user is not logged in.
-  }
-  
-    
-  }
 
-  function storeUser(req, res){
-    const data = req.body;
-
-    req.getConnection((err, conn) => {
-      conn.query('SELECT * FROM user WHERE correo = ?', [data.correo], (err, userdata) => {
-        if(userdata.length > 0) {
-          res.render('login/register', {error:'Usuario ya existe'})
-          
-        } else {
-                    bcrypt.hash(data.password, 12).then(hash =>{
-                      data.password = hash;
-                      
-                      req.getConnection((err, conn) => {
-                        conn.query('INSERT INTO user SET ?',[data], (err, rows) =>{
-                          res.redirect('/');
-                        
-                          if (err) {
-                            console.log(err);
-                          }
-                        
-                        });
-                      });
-                
-                    });
-
-        }
-      });
-    });
-  }
 
 
   function logout(req, res) {
@@ -100,8 +56,6 @@ const bcrypt = require('bcrypt');
 
   module.exports = {
     login,
-    register,
-    storeUser,
     auth,
     logout
   }

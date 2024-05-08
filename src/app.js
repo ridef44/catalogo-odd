@@ -6,6 +6,8 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const loginRoutes = require('./routes/login');
 const catalogoRoutes = require('./routes/catalogoRoute');
+const userRoutes = require('./routes/userRoutes');
+
 const path = require('path');
 
 
@@ -54,19 +56,23 @@ app.listen(app.get('port'), () => {
 });
 
 app.use('/images', express.static(path.join(__dirname, '/views/img')));
-
-app.use(express.static(path.join(__dirname, 'public'), { index: false }));
-
+app.use(express.static(path.join(__dirname, 'public/admin'), { index: false }));
 
 app.use('/', loginRoutes);
 app.use('/', catalogoRoutes);
+app.use('/', userRoutes);
 
 
 app.get('/', (req, res) => {
   if (req.session.loggedIn) {
+    let rol = req.session.rol;
     let name = req.session.nombre;
-  
-    res.render('home', {name});
+    if (rol===1){
+      res.render('home', {name});
+    }
+    else{
+      res.render('catalogo/lectura', {name});
+    }
   } else {
     res.redirect('/login');
   }
