@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 
   
-  function login(req, res) {
+ function login(req, res) {
     if (req.session.loggedIn) {
       res.redirect('/');
      

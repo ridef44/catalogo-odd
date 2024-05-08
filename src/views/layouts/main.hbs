@@ -11,7 +11,9 @@
        
  
     <!-- Fontawesome Link -->
-    <link href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" rel="stylesheet">
+
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.css">
+
       
 
   </head>
@@ -21,32 +23,34 @@
 <nav class="bg-midnight border-gray-200 text-white">
   <div class="max-w-screen-xl flex items-center justify-between mx-auto p-4">
      <div class="flex flex-grow items-center ">
+
+     {{#if name}}
        <img src="/images/odd-w-sm.png" class="h-8 mr-8" /> <!-- Margen derecho al logo -->
      
-     {{#if name}}
+
       <a href="/" class="mr-8"> <!-- Margen derecho al enlace Inicio -->
          <span 
          class="flex items-center self-center font-semibold whitespace-nowrap hover:text-aws px-8">
           Inicio &nbsp;
-             <i data-feather="home"></i> 
+             <i data-feather="cloud-lightning"></i> 
           </span>
-        
        </a>
-       <a href="/users" class="">
-         <span 
-         class="flex items-center self-center font-semibold whitespace-nowrap hover:text-aws px-8">
-         Usuarios &nbsp;
-         <i data-feather="users"></i> <!-- Icono de usuarios para "Usuarios" -->
-         </span>
-       </a>
-       {{/if}}
+       {{#ifEquals rol 1}}
+<a href="/users" class="">
+  <span class="flex items-center self-center font-semibold whitespace-nowrap hover:text-aws px-8">
+    Usuarios &nbsp;
+    <i data-feather="users"></i>
+  </span>
+</a>
+{{/ifEquals}}
+
+ 
        
      </div>
 
     <div class="w-full md:block md:w-auto" id="navbar-default">
       <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-       
-        {{#if name}}
+   
         <li class="relative">
           <a onclick="dropdown()" href="#" class="bg-midnight flex items-center hover:text-aws">
             <p>{{name}} &nbsp;</p>
@@ -65,10 +69,6 @@
               </li>
             </ul>
           </div>
-        </li>
-        {{else}}
-        <li class="relative bg-midnight">
-          <a href="/register" class="nav-link font-semibold border-2 border-white hover:bg-white hover:text-black py-3 px-4 rounded-md">Registro</a>
         </li>
         {{/if}}
       </ul>
@@ -92,5 +92,10 @@
         document.querySelector("#down").classList.toggle("hidden");
       }
  
+    </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script>
+        feather.replace()
     </script>
 

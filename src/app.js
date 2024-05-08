@@ -24,7 +24,10 @@ const hbs = exphbs.create({
   helpers: {
       precompiled: (content, options) => {
           return content;
-      }
+      },
+      ifEquals: function(arg1, arg2, options) {
+        return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+    }
   }
 });
 
@@ -68,10 +71,10 @@ app.get('/', (req, res) => {
     let rol = req.session.rol;
     let name = req.session.nombre;
     if (rol===1){
-      res.render('home', {name});
+      res.render('home', {name, rol});
     }
     else{
-      res.render('catalogo/lectura', {name});
+      res.render('catalogo/lectura', {name, rol});
     }
   } else {
     res.redirect('/login');

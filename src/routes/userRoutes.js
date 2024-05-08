@@ -12,6 +12,9 @@ router.get('/users', userController.list);
 //router.get('/user/edit/:id', userController.edit)
 router.get('/edit-user/:id', userController.edit)
 
+//router.get('/user/edit/:id', userController.edit)
+router.post('/edit-user/:id', userController.update)
+
 
 
 module.exports = router;
