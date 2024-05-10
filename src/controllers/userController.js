@@ -1,7 +1,6 @@
 const bcrypt = require('bcrypt');
 
 
-//Funcion para realizar la busqueda de usuarios
 function searchUsers(req, callback) {
   const searchTerm = req.query.search || ''; // Obtener el término de búsqueda de la consulta URL
 
@@ -9,12 +8,15 @@ function searchUsers(req, callback) {
     SELECT user.id, user.correo, user.nombre, role.role
     FROM user
     LEFT JOIN role ON user.id_role = role.id
-    WHERE user.correo <> 'sistemas@odd.digital'
+    WHERE user.correo <> "sistemas@odd.digital"
   `;
+
+  const params = []; // Array para almacenar parámetros seguros
 
   // Aplicar búsqueda si se proporciona un término de búsqueda
   if (searchTerm) {
-    query += ` WHERE user.nombre LIKE '%${searchTerm}%'`;
+    query += ` AND user.nombre LIKE ?`; // Uso de parámetro para evitar inyección SQL
+    params.push(`%${searchTerm}%`); // Agregar término de búsqueda al array de parámetros
   }
 
   // Lógica para obtener los usuarios que coinciden con el término de búsqueda
@@ -23,7 +25,7 @@ function searchUsers(req, callback) {
       return callback(err, null);
     }
 
-    conn.query(query, (err, results) => {
+    conn.query(query, params, (err, results) => { // Pasar parámetros de forma segura
       if (err) {
         return callback(err, null);
       }
@@ -41,7 +43,8 @@ function searchUsers(req, callback) {
 }
 
 
-//Funcio  para listara los usuarios
+
+//Funcio  para listar a los usuarios
 function list(req, res) {
   if (!req.session.loggedIn) {
     return res.redirect('/');
@@ -52,6 +55,7 @@ function list(req, res) {
   // Buscar usuarios
   searchUsers(req, (err, usuarios) => {
     if (err) {
+      console.log(err)
       return res.status(500).json({ message: "Error al obtener los usuarios" });
     }
     
@@ -67,7 +71,7 @@ function list(req, res) {
 }
 
 
-//Funcion para listar los elementos en el form
+//Funcion para listar los elementos en el form para editar usuario
 function edit(req, res) {
   if (!req.session.loggedIn) {
     return res.redirect('/');
@@ -107,7 +111,7 @@ function edit(req, res) {
             role.selected = (role.id === usuario.id_role);
           });
           let name = req.session.nombre;
-          res.render('user/edit', { usuario, roles, name });
+          res.render('user/edit', { usuario, roles, name, rol });
         });
       });
     });
@@ -115,9 +119,6 @@ function edit(req, res) {
   }else{
     return res.redirect('/');
   }
-
-
-  
 }
 
 //Funcion para actualizar los elementos
@@ -137,10 +138,7 @@ function update(req, res) {
         console.log(err);
         return res.status(500).send('Error al actualizar la agencia');
       }
-
-      setTimeout(() => {
         res.redirect('/users');
-      }, 3000);
     });
   });
 }
@@ -148,7 +146,9 @@ function update(req, res) {
 
 //Funciones para renderizar vista de creacion de usuari9os
 function register(req, res){
-  if (!req.session.loggedIn) {
+  let rol = req.session.rol;
+
+  if (!req.session.loggedIn || rol == 2) {
     return res.redirect('/');
   }
 
@@ -162,13 +162,13 @@ function register(req, res){
         console.log(err);
       }
       let name = req.session.nombre;
-      res.render('user/register', { name, roles: rows });
+      res.render('user/register', { name, roles: rows, rol });
       //console.log(rows);
     });
   });
 }
 
-//Crear usuarios
+//inserta en base de datos al usuario nuevo 
 function storeUser(req, res) {
   const data = req.body;
   delete data.password_confirm; // Elimina el campo antes de proceder con cualquier operación de base de datos
@@ -186,7 +186,16 @@ function storeUser(req, res) {
       }
 
       if (userdata.length > 0) {
-        res.render('user/register', {error: 'Usuario ya existe'});
+        // Si el usuario ya existe, obtener roles antes de renderizar la vista con error
+        conn.query('SELECT id, role FROM role', (err, roles) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).send('Error al consultar la base de datos.');
+          }
+          let name = req.session.nombre;
+          let rol = req.session.rol;
+          res.render('user/register', { name, roles, rol, error: 'Usuario ya existe' });
+        });
       } else {
         bcrypt.hash(data.password, 12).then(hash => {
           data.password = hash;
@@ -207,10 +216,122 @@ function storeUser(req, res) {
 }
 
 
+// Función para cambiar la contraseña del usuario
+function changePassword(req, res) {
+  const { password } = req.body; // Recibe la nueva contraseña desde el cuerpo de la solicitud
+  const userId = req.params.id; // Suponemos que el ID del usuario se pasa como parámetro en la ruta
+
+  // Verificar si el usuario está logueado y si tiene permisos para modificar este usuario específico
+  /*if (!req.session.loggedIn || req.session.userId !== userId) {
+    return res.redirect('/login'); // Redireccionar si no está autenticado o no tiene permiso
+  } */
+
+  if (!req.session.loggedIn) {
+    return res.redirect('/'); // Redireccionar si no está autenticado o no tiene permiso
+  }
+
+  req.getConnection((err, conn) => {
+    if (err) {
+      console.error("Error al conectar a la base de datos:", err);
+      return res.status(500).send('Error al conectar con la base de datos.');
+    }
+
+    // Hashear la nueva contraseña antes de guardarla en la base de datos
+    bcrypt.hash(password, 12, (err, hashedPassword) => {
+      if (err) {
+        console.error("Error al hashear la contraseña:", err);
+        return res.status(500).send('Error al hashear la contraseña.');
+      }
+
+      // Actualizar la contraseña en la base de datos para el usuario especificado
+      conn.query('UPDATE user SET password = ? WHERE id = ?', [hashedPassword, userId], (err, results) => {
+        if (err) {
+          console.error("Error al actualizar la contraseña:", err);
+          return res.status(500).send('Error al actualizar la contraseña.');
+        }
+        // Redirigir a alguna página de confirmación o al perfil del usuario
+        res.redirect('/users'); // Asumiendo que '/profile' es donde el usuario puede ver su perfil
+      });
+    });
+  });
+}
+
+
+//Funcion para listar los elementos en el form para editar usuario
+function editPassword(req, res) {
+  if (!req.session.loggedIn) {
+    return res.redirect('/');
+  }
+  // Recuperar el rol del usuario desde la sesión
+  let rol = req.session.rol;
+  const id = req.params.id;
+
+  if(rol==1){
+    req.getConnection((err, conn) => {
+      if (err) {
+        console.error('Error al obtener conexión:', err);
+        return res.status(500).send('Error del servidor al obtener la conexión');
+      }
+  
+      conn.query('SELECT user.id, user.correo, user.nombre, role.role, user.id_role FROM user LEFT JOIN role ON user.id_role = role.id WHERE user.id = ? AND user.correo <> "sistemas@odd.digital" ', [id], (err, usuarioResult) => {
+        if (err) {
+          console.error('Error al consultar la base de datos:', err);
+          return res.status(500).send('Error al consultar la base de datos');
+        }
+  
+        if (usuarioResult.length === 0) {
+          console.log('Usuario no encontrado con ID:', id);
+          return res.status(404).send('Usuario no encontrado');
+        }
+  
+        const usuario = usuarioResult[0];
+          let name = req.session.nombre;
+          res.render('user/password', { usuario, rol, name });
+        ;
+      });
+    });
+
+  }else{
+    return res.redirect('/');
+  }
+}
+
+//Borrar usuarios
+function deleteUser(req, res) {
+  const id = req.params.id;
+
+  if (!req.session.loggedIn ) {
+    return res.redirect('/'); 
+}
+
+  req.getConnection((err, conn) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send('Error de servidor');
+    }
+      conn.query('DELETE FROM user WHERE id = ?', [id], (err, rows) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).send('Error de servidor');
+        }
+        setTimeout(() => {
+          res.redirect('/users');
+        }, 3000);
+        
+      });
+    });
+  }
+
+
+
+
   module.exports={
     register,
     storeUser,
     list,
     edit,
-    update
+    update,
+    changePassword,
+    editPassword,
+    deleteUser
   }

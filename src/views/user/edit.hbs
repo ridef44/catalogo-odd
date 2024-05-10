@@ -44,31 +44,6 @@
             type="email" name="correo" placeholder="Correo" id="correo" required>
         </div>
 
-        <div class="w-full">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
-                Contraseña
-            </label>
-            <input
-            oninvalid="this.setCustomValidity('Ingrese el campo')"
-            oninput="setCustomValidity('')"
-            class="bg-gray-100 border border-gray-200 w-full text-lg placeholder-gray-500 p-2 focus:bg-white shadow-md"
-            type="password" name="password" placeholder="Contraseña" id="password" required>
-        </div>
-
-        <div class="w-full">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="password-confirm">
-                Repetir Contraseña
-            </label>
-            <input
-            oninvalid="this.setCustomValidity('Las contraseñas no coinciden')"
-            oninput="setCustomValidity('')"
-            class="bg-gray-100 border border-gray-200 w-full text-lg placeholder-gray-500 p-2 focus:bg-white shadow-md"
-            type="password" placeholder="Repetir Contraseña" id="password-confirm" required>
-        </div>
-
-        {{#if error}}
-        <p class="text-center text-red-500 text-sm">{{error}}</p>
-        {{/if}}
         <button
             class="rounded-md bg-gray-700 w-60 text-lg text-white font-semibold p-2 my-3 hover:bg-gray-900 hover:text-yellow-500 focus:bg-green-900 shadow-lg"
         type="submit">
@@ -89,22 +64,5 @@
     <button onclick="this.parentElement.style.display='none'" class="text-2xl font-semibold leading-none right-0 top-0 mt-1 mr-4 outline-none focus:outline-none">×</button>
   </div>
 
-
-
-
-
-<script>
-document.getElementById('formID').addEventListener('submit', function(event) {
-  var password = document.getElementById('password').value;
-  var confirmPassword = document.getElementById('password-confirm').value;
-
-  if (password !== confirmPassword) {
-    document.getElementById('password-confirm').setCustomValidity('Las contraseñas no coinciden');
-    event.preventDefault(); // Evitar que el formulario se envíe
-  } else {
-    document.getElementById('password-confirm').setCustomValidity(''); // Reiniciar la validación
-  }
-});
-</script>
 
 
