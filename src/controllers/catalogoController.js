@@ -1,6 +1,6 @@
 const path = require('path');
 
-//renderizado de archivos estativos
+//vista de administracion
 function renderHtml (req, res){
 
   if(req.session.loggedIn && req.session.rol ===1){
@@ -13,7 +13,7 @@ function renderHtml (req, res){
   
 }
 
-
+//vista solo de lectura
 function renderUser (req, res){
 
   if(!req.session.loggedIn){
@@ -38,13 +38,16 @@ function noacces (req, res){
   
 }
 
-
+function testing (req, res){
+  res.render('user/copy')
+}
 
 
 
 module.exports ={
   renderHtml,
   renderUser,
-  noacces
+  noacces,
+  testing
  
 }

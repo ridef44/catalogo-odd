@@ -29,6 +29,7 @@ const bcrypt = require('bcrypt');
               req.session.loggedIn = true;
 	            req.session.nombre = element.nombre;
               req.session.rol = element.id_role;
+              req.session.correo = element.correo
               res.redirect('/');
             }
           });

@@ -27,7 +27,11 @@ const hbs = exphbs.create({
       },
       ifEquals: function(arg1, arg2, options) {
         return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+    },
+    eq: function(a , b){
+      return (a ===b);
     }
+    
   }
 });
 
@@ -58,8 +62,10 @@ app.listen(app.get('port'), () => {
   console.log('Estamos trabajando sobre el puerto', app.get('port'));
 });
 
+//Configuracion de archivos estativos
 app.use('/images', express.static(path.join(__dirname, '/views/img')));
 app.use(express.static(path.join(__dirname, 'public/admin'), { index: false }));
+app.use(express.static(path.join(__dirname, 'public/explorer'), { index: false }));
 
 app.use('/', loginRoutes);
 app.use('/', catalogoRoutes);
@@ -70,8 +76,9 @@ app.get('/', (req, res) => {
   if (req.session.loggedIn) {
     let rol = req.session.rol;
     let name = req.session.nombre;
+    let correo = req.session.correo
     if (rol===1){
-      res.render('home', {name, rol});
+      res.render('home', {name, rol, correo});
     }
     else{
       res.render('catalogo/lectura', {name, rol});

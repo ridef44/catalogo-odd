@@ -6,14 +6,14 @@
     <form action="" method="POST">
       <div class="mb-6 grid grid-cols-1 gap-4">
         <div class="flex items-center">
-          <i data-feather="mail"></i> 
+          <i class="mr-4" data-feather="mail"></i> 
           <input class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="correo" id="correo" type="text" placeholder="Correo">
         </div>
         {{#if error}}
         <p class="text-red-500 text-xs italic">{{error}}</p>
         {{/if}}
         <div class="flex items-center">
-          <i data-feather="key"></i>
+          <i class="mr-4" data-feather="lock"></i>
           <input class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="password" id="password" type="password" placeholder="**********">
         </div>
         <p class="text-midnigth text-xs italic">Ingrese contraseña.</p>

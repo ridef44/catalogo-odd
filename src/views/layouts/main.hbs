@@ -35,14 +35,14 @@
              <i data-feather="cloud-lightning"></i> 
           </span>
        </a>
-       {{#ifEquals rol 1}}
-<a href="/users" class="">
-  <span class="flex items-center self-center font-semibold whitespace-nowrap hover:text-aws px-8">
-    Usuarios &nbsp;
-    <i data-feather="users"></i>
-  </span>
-</a>
-{{/ifEquals}}
+      {{#ifEquals correo 'admin@odd.digital'}}
+        <a href="/users" class="">
+          <span class="flex items-center self-center font-semibold whitespace-nowrap hover:text-aws px-8">
+            Usuarios &nbsp;
+            <i data-feather="users"></i>
+          </span>
+        </a>
+      {{/ifEquals}}
 
  
        

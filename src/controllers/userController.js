@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 
-
+//Funcion de  busqueda de usuarios
 function searchUsers(req, callback) {
   const searchTerm = req.query.search || ''; // Obtener el término de búsqueda de la consulta URL
 
@@ -8,17 +8,16 @@ function searchUsers(req, callback) {
     SELECT user.id, user.correo, user.nombre, role.role
     FROM user
     LEFT JOIN role ON user.id_role = role.id
-    WHERE user.correo <> "sistemas@odd.digital"
+    WHERE user.correo <> "admin@odd.digital"
   `;
 
   const params = []; // Array para almacenar parámetros seguros
 
-  // Aplicar búsqueda si se proporciona un término de búsqueda
-  if (searchTerm) {
-    query += ` AND user.nombre LIKE ?`; // Uso de parámetro para evitar inyección SQL
-    params.push(`%${searchTerm}%`); // Agregar término de búsqueda al array de parámetros
+   // Aplicar búsqueda si se proporciona un término de búsqueda
+   if (searchTerm) {
+    query += ` AND (user.nombre LIKE ? OR user.correo LIKE ?) `; // Uso de parámetro para evitar inyección SQL
+    params.push(`%${searchTerm}%`, `%${searchTerm}%`); // Agregar término de búsqueda al array de parámetros
   }
-
   // Lógica para obtener los usuarios que coinciden con el término de búsqueda
   req.getConnection((err, conn) => {
     if (err) {
@@ -50,7 +49,7 @@ function list(req, res) {
     return res.redirect('/');
   }
   // Recuperar el rol del usuario desde la sesión
-  let rol = req.session.rol;
+  let correo = req.session.correo;
 
   // Buscar usuarios
   searchUsers(req, (err, usuarios) => {
@@ -60,9 +59,9 @@ function list(req, res) {
     }
     
     let name = req.session.nombre;
-    if (rol == 1) {
-      // Renderizar la plantilla para usuarios con rol 1
-      res.render('user/list_user', { usuarios, name, rol });
+    if (correo == 'admin@odd.digital') {
+      // Renderizar la plantilla para usuarios con correo Sistemas o usuario master
+      res.render('user/list_user', { usuarios, name, correo });
     } else {
       // Redireccionar para usuarios con otros roles
       return res.redirect('/');
@@ -77,17 +76,17 @@ function edit(req, res) {
     return res.redirect('/');
   }
   // Recuperar el rol del usuario desde la sesión
-  let rol = req.session.rol;
+  let correo = req.session.correo;
   const id = req.params.id;
 
-  if(rol==1){
+  if(correo=='admin@odd.digital'){
     req.getConnection((err, conn) => {
       if (err) {
         console.error('Error al obtener conexión:', err);
         return res.status(500).send('Error del servidor al obtener la conexión');
       }
   
-      conn.query('SELECT user.id, user.correo, user.nombre, role.role, user.id_role FROM user LEFT JOIN role ON user.id_role = role.id WHERE user.id = ? AND user.correo <> "sistemas@odd.digital" ', [id], (err, usuarioResult) => {
+      conn.query('SELECT user.id, user.correo, user.nombre, role.role, user.id_role FROM user LEFT JOIN role ON user.id_role = role.id WHERE user.id = ? AND user.correo <> "admin@odd.digital" ', [id], (err, usuarioResult) => {
         if (err) {
           console.error('Error al consultar la base de datos:', err);
           return res.status(500).send('Error al consultar la base de datos');
@@ -111,7 +110,7 @@ function edit(req, res) {
             role.selected = (role.id === usuario.id_role);
           });
           let name = req.session.nombre;
-          res.render('user/edit', { usuario, roles, name, rol });
+          res.render('user/edit', { usuario, roles, name, correo });
         });
       });
     });
@@ -146,12 +145,11 @@ function update(req, res) {
 
 //Funciones para renderizar vista de creacion de usuari9os
 function register(req, res){
-  let rol = req.session.rol;
-
-  if (!req.session.loggedIn || rol == 2) {
+  let correo = req.session.correo
+   // Verificar si el usuario está logueado y si el correo es el permitido
+   if (!req.session.loggedIn || correo !== 'admin@odd.digital') {
     return res.redirect('/');
   }
-
   req.getConnection((err, conn) => {
     if (err) {
       console.log(err);
@@ -162,7 +160,7 @@ function register(req, res){
         console.log(err);
       }
       let name = req.session.nombre;
-      res.render('user/register', { name, roles: rows, rol });
+      res.render('user/register', { name, roles: rows, correo });
       //console.log(rows);
     });
   });
@@ -193,8 +191,8 @@ function storeUser(req, res) {
             return res.status(500).send('Error al consultar la base de datos.');
           }
           let name = req.session.nombre;
-          let rol = req.session.rol;
-          res.render('user/register', { name, roles, rol, error: 'Usuario ya existe' });
+          let correo = req.session.correo;
+          res.render('user/register', { name, roles, correo, error: 'Correo registrado. Por favor, usar otra dirección' });
         });
       } else {
         bcrypt.hash(data.password, 12).then(hash => {
@@ -204,7 +202,9 @@ function storeUser(req, res) {
               console.log(err);
               return res.status(500).send('Error al registrar el usuario.');
             }
-            res.redirect('/users');
+            setTimeout(() => {
+              res.redirect('/users');
+            }, 3000);
           });
         }).catch(hashError => {
           console.log(hashError);
@@ -250,7 +250,7 @@ function changePassword(req, res) {
           return res.status(500).send('Error al actualizar la contraseña.');
         }
         // Redirigir a alguna página de confirmación o al perfil del usuario
-        res.redirect('/users'); // Asumiendo que '/profile' es donde el usuario puede ver su perfil
+        res.redirect('/users'); 
       });
     });
   });
@@ -263,17 +263,17 @@ function editPassword(req, res) {
     return res.redirect('/');
   }
   // Recuperar el rol del usuario desde la sesión
-  let rol = req.session.rol;
+  let correo = req.session.correo;
   const id = req.params.id;
 
-  if(rol==1){
+  if(correo=='admin@odd.digital'){
     req.getConnection((err, conn) => {
       if (err) {
         console.error('Error al obtener conexión:', err);
         return res.status(500).send('Error del servidor al obtener la conexión');
       }
   
-      conn.query('SELECT user.id, user.correo, user.nombre, role.role, user.id_role FROM user LEFT JOIN role ON user.id_role = role.id WHERE user.id = ? AND user.correo <> "sistemas@odd.digital" ', [id], (err, usuarioResult) => {
+      conn.query('SELECT user.id, user.correo, user.nombre, role.role, user.id_role FROM user LEFT JOIN role ON user.id_role = role.id WHERE user.id = ? AND user.correo <> "admin@odd.digital" ', [id], (err, usuarioResult) => {
         if (err) {
           console.error('Error al consultar la base de datos:', err);
           return res.status(500).send('Error al consultar la base de datos');
@@ -286,7 +286,7 @@ function editPassword(req, res) {
   
         const usuario = usuarioResult[0];
           let name = req.session.nombre;
-          res.render('user/password', { usuario, rol, name });
+          res.render('user/password', { usuario, correo, name });
         ;
       });
     });
