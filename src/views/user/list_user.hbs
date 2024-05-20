@@ -12,14 +12,31 @@
                         <label for="simple-search" class="sr-only">Search</label>
                         <div class="relative w-80">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                      <i class="" data-feather="search"></i>
+                                      
                             </div>
                             <input type="text" name="search" value="{{searchTerm}}" placeholder="Buscar Usuarios" required="" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2">
                
                         </div>
-                         <a href="/users" class="bg-stone-500 hover:bg-stone-700 hover:text-aws text-white font-bold py-2 px-4 rounded-md ml-4">
-                           <i data-feather="rotate-cw"></i>
-                         </a>
+
+                        <!-- Botón con tooltip -->
+                            <div class="relative group mx-2">
+                                <button type="submit" class="bg-stone-500 hover:bg-stone-700 hover:text-aws text-white font-bold py-2 px-4 rounded-md">
+                                    <i data-feather="search"></i>
+                                </button>
+                                <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
+                                    Buscar
+                                </div>
+                            </div>
+
+                            <!-- Enlace con tooltip -->
+                            <div class="relative group mx-2 mt-1">
+                                <a href="/users" class="bg-stone-500 hover:bg-stone-700 hover:text-aws text-white font-bold py-2 px-4 rounded-md inline-block">
+                                <i class="" data-feather="rotate-cw"></i>
+                                </a>
+                                <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
+                                    Limpiar
+                                </div>
+                            </div>
                     </form>
                 </div>
                 <!-- Busqueda -->
@@ -42,7 +59,7 @@
             </div>
 
             <!--Tabla Principal-->
-            <div class="overflow-x-auto">
+            <div id="formMain" class="overflow-x-auto">
                 <table class="w-full text-sm text-left text-gray-600 ">
                     <thead class="text-xs text-gray-800 uppercase bg-gray-100">
                         <tr>
@@ -96,33 +113,48 @@
                             {{/if}}
                         </td>
 
+                              <!--Botones de Acciones -->
+                <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">
+                    <div class="flex items-center space-x-4">
+                        <!-- Botón de cambio de contraseña -->
+                        <div class="relative group">
+                            <a 
+                                href="/password/{{this.id}}"
+                                class="py-2 px-3 flex items-center text-sm font-medium text-center text-amber-500 bg-white rounded-lg border border-amber-500 hover:text-white  hover:bg-amber-500 focus:ring-4 focus:outline-none focus:ring-amber-300 botones">
+                                <i class="" data-feather="key"></i>
+                            </a>
+                            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
+                                Cambiar contraseña
+                            </div>
+                        </div>
 
-                       
-                            <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap">
-                                <div class="flex items-center space-x-4">
-                                   
-                                    <a 
-                                        href="/password/{{this.id}}"
-                                        class="py-2 px-3 flex items-center text-sm font-medium text-center text-amber-500 bg-white rounded-lg border border-amber-500 hover:text-white  hover:bg-amber-500 focus:ring-4 focus:outline-none focus:ring-primary-300">
-                                         <i class="" data-feather="key"></i>
-                                       
-                                    </a>
+                        <!-- Botón de edición -->
+                        <div class="relative group">
+                            <a 
+                                href="/edit-user/{{this.id}}"
+                                class="py-2 px-3 flex items-center text-sm font-medium text-center text-sky-500 bg-white rounded-lg border border-sky-500 hover:text-white  hover:bg-sky-500 focus:ring-4 focus:outline-none focus:ring-sky-300 botones">
+                                <i class="" data-feather="edit"></i>
+                            </a>
+                            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
+                                Editar usuario
+                            </div>
+                        </div>
 
-                                     <a 
-                                         href="/edit-user/{{this.id}}"
-                                          class="py-2 px-3 flex items-center text-sm font-medium text-center text-sky-500 bg-white rounded-lg border border-sky-500 hover:text-white  hover:bg-sky-500 focus:ring-4 focus:outline-none focus:ring-primary-300">
-                                         <i class="" data-feather="edit"></i>
-                                     
-                                    </a>
-                                    <button 
-                                            onclick="openModal({{this.id}})" 
-                                            type="button" 
-                                            class="flex items-center text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 text-center">
-                                         <i class="" data-feather="trash-2"></i>
-                                       
-                                    </button>
-                                </div>
-                            </td>
+                        <!-- Botón de eliminación -->
+                        <div class="relative group">
+                            <button 
+                                onclick="openModal({{this.id}})" 
+                                type="button" 
+                                class="py-2  px-3 flex items-center text-sm font-medium text-center text-red-700 bg-white rounded-lg border border-red-700 hover:text-white hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 botones">
+                                <i class="" data-feather="trash-2"></i>
+                            </button>
+                            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded py-1 px-2 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
+                                Eliminar usuario
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <!--Botones de Acciones -->
                         </tr>
                    
                        
@@ -235,14 +267,28 @@ function confirmDelete() {
 
 function showNotification() {
   const notification = document.getElementById('notificacion');
-  notification.classList.remove('hidden'); // Muestra la notificación
+  const botones = document.querySelectorAll('.botones');
+  const form1 = document.getElementById('formMain');
+    
+    notification.classList.remove('hidden');
+    botones.forEach(boton => {
+        boton.classList.add('pointer-events-none');
+    });
+  
+  
   setTimeout(() => {
     closeNotification(); // Oculta la notificación después de 3 segundos
   }, 3000);
 }
 
 function closeNotification() {
-  const notification = document.getElementById('notificacion');
-  notification.classList.add('hidden'); // Oculta la notificación
+    const notification = document.getElementById('notificacion');
+    const botones = document.querySelectorAll('.botones');
+    const form1 = document.getElementById('formMain');
+
+    notification.classList.add('hidden');
+    botones.forEach(boton => {
+        boton.classList.remove('pointer-events-none');
+    });
 }
 </script>
