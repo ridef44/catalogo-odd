@@ -58,6 +58,12 @@ app.use(session({
   saveUninitialized: true
 }));
 
+// Middleware para pasar la variable de entorno MAIL_ADMIN a todas las vistas
+app.use((req, res, next) => {
+  res.locals.mailAdmin = process.env.MAIL_ADMIN;
+  next();
+});
+
 app.listen(app.get('port'), () => {
   console.log('Estamos trabajando sobre el puerto', app.get('port'));
 });

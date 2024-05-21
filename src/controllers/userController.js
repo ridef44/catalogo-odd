@@ -1,23 +1,30 @@
 const bcrypt = require('bcrypt');
+const dotenv = require ('dotenv');
 
-//Funcion de  busqueda de usuarios
+dotenv.config({path:'.env'})
+
+// Función de búsqueda de usuarios
 function searchUsers(req, callback) {
   const searchTerm = req.query.search || ''; // Obtener el término de búsqueda de la consulta URL
+
+  // Obtener el correo electrónico excluido desde las variables de entorno
+  const excludedEmail = process.env.MAIL_ADMIN;
 
   let query = `
     SELECT user.id, user.correo, user.nombre, role.role
     FROM user
     LEFT JOIN role ON user.id_role = role.id
-    WHERE user.correo <> "admin@odd.digital"
+    WHERE user.correo <> ?
   `;
 
-  const params = []; // Array para almacenar parámetros seguros
+  const params = [excludedEmail]; // Usar la variable de entorno
 
-   // Aplicar búsqueda si se proporciona un término de búsqueda
-   if (searchTerm) {
+  // Aplicar búsqueda si se proporciona un término de búsqueda
+  if (searchTerm) {
     query += ` AND (user.nombre LIKE ? OR user.correo LIKE ?) `; // Uso de parámetro para evitar inyección SQL
     params.push(`%${searchTerm}%`, `%${searchTerm}%`); // Agregar término de búsqueda al array de parámetros
   }
+
   // Lógica para obtener los usuarios que coinciden con el término de búsqueda
   req.getConnection((err, conn) => {
     if (err) {
@@ -28,6 +35,7 @@ function searchUsers(req, callback) {
       if (err) {
         return callback(err, null);
       }
+
       // Mapear los resultados para asegurar que la estructura sea consistente
       const usuarios = results.map(result => ({
         id: result.id,
@@ -59,7 +67,7 @@ function list(req, res) {
     }
     
     let name = req.session.nombre;
-    if (correo == 'admin@odd.digital') {
+    if (correo == process.env.MAIL_ADMIN) {
       // Renderizar la plantilla para usuarios con correo Sistemas o usuario master
       res.render('user/list_user', { usuarios, name, correo });
     } else {
@@ -70,33 +78,42 @@ function list(req, res) {
 }
 
 
-//Funcion para listar los elementos en el form para editar usuario
+// Función para listar los elementos en el formulario para editar usuario
 function edit(req, res) {
   if (!req.session.loggedIn) {
     return res.redirect('/');
   }
+
   // Recuperar el rol del usuario desde la sesión
   let correo = req.session.correo;
   const id = req.params.id;
 
-  if(correo=='admin@odd.digital'){
+  if (correo === process.env.MAIL_ADMIN) {
     req.getConnection((err, conn) => {
       if (err) {
         console.error('Error al obtener conexión:', err);
         return res.status(500).send('Error del servidor al obtener la conexión');
       }
-  
-      conn.query('SELECT user.id, user.correo, user.nombre, role.role, user.id_role FROM user LEFT JOIN role ON user.id_role = role.id WHERE user.id = ? AND user.correo <> "admin@odd.digital" ', [id], (err, usuarioResult) => {
+
+      const query = `
+        SELECT user.id, user.correo, user.nombre, role.role, user.id_role 
+        FROM user 
+        LEFT JOIN role ON user.id_role = role.id 
+        WHERE user.id = ? AND user.correo <> ?
+      `;
+      const params = [id, process.env.MAIL_ADMIN];
+
+      conn.query(query, params, (err, usuarioResult) => {
         if (err) {
           console.error('Error al consultar la base de datos:', err);
           return res.status(500).send('Error al consultar la base de datos');
         }
-  
+
         if (usuarioResult.length === 0) {
           console.log('Usuario no encontrado con ID:', id);
           return res.status(404).send('Usuario no encontrado');
         }
-  
+
         const usuario = usuarioResult[0];
         const queryRoles = 'SELECT id, role FROM role';
         conn.query(queryRoles, (err, rowsRole) => {
@@ -104,21 +121,22 @@ function edit(req, res) {
             console.error('Error al obtener roles:', err);
             return res.status(500).send('Error del servidor al obtener roles');
           }
-          
+
           const roles = rowsRole;
           roles.forEach(role => {
             role.selected = (role.id === usuario.id_role);
           });
+
           let name = req.session.nombre;
           res.render('user/edit', { usuario, roles, name, correo });
         });
       });
     });
-
-  }else{
+  } else {
     return res.redirect('/');
   }
 }
+
 
 //Funcion para actualizar los elementos
 
@@ -147,7 +165,7 @@ function update(req, res) {
 function register(req, res){
   let correo = req.session.correo
    // Verificar si el usuario está logueado y si el correo es el permitido
-   if (!req.session.loggedIn || correo !== 'admin@odd.digital') {
+   if (!req.session.loggedIn || correo !== process.env.MAIL_ADMIN) {
     return res.redirect('/');
   }
   req.getConnection((err, conn) => {
@@ -257,41 +275,48 @@ function changePassword(req, res) {
 }
 
 
-//Funcion para listar los elementos en el form para editar usuario
+// Función para listar los elementos en el formulario para editar la contraseña de un usuario
 function editPassword(req, res) {
   if (!req.session.loggedIn) {
     return res.redirect('/');
   }
+
   // Recuperar el rol del usuario desde la sesión
   let correo = req.session.correo;
   const id = req.params.id;
 
-  if(correo=='admin@odd.digital'){
+  if (correo === process.env.MAIL_ADMIN) {
     req.getConnection((err, conn) => {
       if (err) {
         console.error('Error al obtener conexión:', err);
         return res.status(500).send('Error del servidor al obtener la conexión');
       }
-  
-      conn.query('SELECT user.id, user.correo, user.nombre, role.role, user.id_role FROM user LEFT JOIN role ON user.id_role = role.id WHERE user.id = ? AND user.correo <> "admin@odd.digital" ', [id], (err, usuarioResult) => {
+
+      const query = `
+        SELECT user.id, user.correo, user.nombre, role.role, user.id_role 
+        FROM user 
+        LEFT JOIN role ON user.id_role = role.id 
+        WHERE user.id = ? AND user.correo <> ?
+      `;
+      const params = [id, process.env.MAIL_ADMIN];
+
+      conn.query(query, params, (err, usuarioResult) => {
         if (err) {
           console.error('Error al consultar la base de datos:', err);
           return res.status(500).send('Error al consultar la base de datos');
         }
-  
+
         if (usuarioResult.length === 0) {
           console.log('Usuario no encontrado con ID:', id);
           return res.status(404).send('Usuario no encontrado');
         }
-  
+
         const usuario = usuarioResult[0];
-          let name = req.session.nombre;
-          res.render('user/password', { usuario, correo, name });
-        ;
+        let name = req.session.nombre;
+        res.render('user/password', { usuario, correo, name });
       });
     });
-
-  }else{
+  } else {
     return res.redirect('/');
   }
 }
