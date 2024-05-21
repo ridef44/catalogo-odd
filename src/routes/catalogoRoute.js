@@ -11,7 +11,7 @@ router.get('/lectura', catalogoController.renderUser)
 
 router.get('/noacces', catalogoController.noacces)
 
-router.get('/testing', catalogoController.testing)
+//router.get('/testing', catalogoController.testing)
 
 
 
