@@ -1,5 +1,8 @@
 
-src/public/index.html
-src/public/explorer.js
+src/public/
+src/public/
 /src/public/admin
 /src/public/explorer
+.DS_Store
+src/public/.DS_Store
+src/public/.DS_Store

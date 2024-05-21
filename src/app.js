@@ -82,12 +82,13 @@ app.get('/', (req, res) => {
   if (req.session.loggedIn) {
     let rol = req.session.rol;
     let name = req.session.nombre;
-    let correo = req.session.correo
+    let correo = req.session.correo;
+    let index = process.env.MY_DOMAIN;
     if (rol===1){
-      res.render('home', {name, rol, correo});
+      res.render('home', {name, rol, correo, index});
     }
     else{
-      res.render('catalogo/lectura', {name, rol});
+      res.render('catalogo/lectura', {name, rol, index});
     }
   } else {
     res.redirect('/login');
